@@ -30,7 +30,7 @@ MANUAL_DATA = {
 
 ######## CONFIGURE IO LOCATIONS ########
 API_ENDPONT = "https://opendata.digilugu.ee/opendata_covid19_test_results.json"
-OUTPUT_FILE_LOCATION = "./data_new.json"
+OUTPUT_FILE_LOCATION = "../data_new.json"
 
 def get_json_data(url) -> any:
     # Open data endpoint
@@ -41,8 +41,6 @@ if __name__ == "__main__":
     # Get data
     json_data = get_json_data(API_ENDPONT)
 
-    ################# MANUAL DATA CONFIGURATION #################
-    ### NAVBAR MANUAL DATA ###
     # Date of update
     updatedOn = MANUAL_DATA["updatedOn"]
 
@@ -60,7 +58,6 @@ if __name__ == "__main__":
     # Calculate active number of cases
     activeCasesNumber = confirmedCasesNumber - (deceasedNumber + recoveredNumber)
 
-    ### TIME SERIES MANUAL DATA ###
     # Set date ranges
     dates_range_end = MANUAL_DATA["datesEnd"]
 
@@ -85,6 +82,8 @@ if __name__ == "__main__":
     # create copy
     json_copy = json_data
 
+
+    # Get data for each chart
     dataInfectionsByCounty = getCountInfectionsByCounty(json_copy, county_mapping)
     dataInfectionsByCounty10000 = getDataInfectionsByCount10000(dataInfectionsByCounty, county_sizes)
     dataTestsPopRatio = getDataTestsPopRatio(dataInfectionsByCounty10000)
@@ -98,6 +97,7 @@ if __name__ == "__main__":
     dataPositiveTestsByAgeChart = getDataPositiveTestsByAgeChart(json_copy)
     dataPositiveNegativeChart = getDataPositiveNegativeChart(json_copy, county_mapping)
 
+    # Create dictionary for final json
     finalJson = {
         "updatedOn": updatedOn,
         "confirmedCasesNumber": str(confirmedCasesNumber),
@@ -121,5 +121,6 @@ if __name__ == "__main__":
         "dataPositiveNegativeChart": dataPositiveNegativeChart
     }
 
+    # dump json output
     with open(OUTPUT_FILE_LOCATION, "w", encoding="utf-8") as f:
         json.dump(finalJson, f, cls=NpEncoder, ensure_ascii=False)
